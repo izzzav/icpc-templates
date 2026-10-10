@@ -1,103 +1,116 @@
 # Шаблоны — оглавление
 
-Поиск: в IDE `Ctrl+Shift+F` (mac: `Cmd+Shift+F`) по всей папке, или в терминале
-`grep -rli "мост" my ext docs`. В строках ниже есть ключевые слова на русском и
-английском — ищи по ним.
+KACTL: `ext/kactl/content/<путь>`. Всё там протестировано, в начале каждого
+файла есть Description / Usage / Time — как вызывать, читать там
+Весь KACTL в одном файле с оглавлением: `ext/kactl/kactl.pdf`.
 
-## Шапка в начале КАЖДОГО своего файла (5 строк, код ниже не трогать)
+Поиск: `Cmd+Shift+F` в IDE по папке или `grep -rli "segment" ext/kactl/content`.
 
-```
-// ЧТО: дерево отрезков: сумма на отрезке + прибавление на отрезке
-// СЛОЖНОСТЬ: O(log n) на запрос
-// КАК ЗВАТЬ: build(...); update(l, r, x); get(l, r)
-// ИНДЕКСАЦИЯ: с 0 / с 1? отрезки [l, r] или [l, r)?
-// ПРОВЕРЕНО: весна ДЗ 9, задача B — OK
-```
+## Перед вставкой KACTL-кода
 
-## Скрипты (`scripts/`)
+1. Удали из файла `#pragma once` и строки `#include "..."`. То, что они подключали,
+   вставь выше (например, для геометрии сначала `geometry/Point.h`).
+2. Если в основном шаблоне нет `rep`, `all`, `sz`, `ll`, `pii`, `vi`, добавь строки
+   из `scripts/kactl_prefix.cpp`.
+3. Посмотри колонку «Индексы»: в KACTL почти везде полуинтервалы `[l, r)` и нумерация с 0.
+
+## Скрипты (`scripts/`) — работают на macOS и Linux
 
 | Что | Команда |
 |---|---|
+| Проверить, что скрипты работают | `bash scripts/selftest.sh` |
 | Запуск с санитайзерами | `./scripts/run.sh a.cpp in.txt` |
 | Стресс-тест | `./scripts/stress.sh sol.cpp brute.cpp gen.cpp 1000` (с санитайзерами: `SAN=1 ...`) |
 | Образец генератора | `scripts/gen.cpp` |
-| Все ли шаблоны компилируются | `./scripts/check_all.sh` |
-| Чего не хватает для вставки KACTL | `scripts/kactl_prefix.cpp` |
+| Компилируются ли все .cpp в папке | `./scripts/check_all.sh hw` |
 
-## Свои шаблоны (`my/`) — из домашек
+macOS: `brew install gcc`, иначе не соберётся код с pb_ds (`OrderStatisticTree.h`,
+`HashMap.h`) и `__gcd`. Скрипты сами найдут g++ из brew.
 
-Колонку «проверено» заполняй только если решение было сдано (OK в системе).
+## Графы
 
-| Что / ключевые слова | Файл | Откуда | Проверено |
-|---|---|---|---|
-| мосты, bridges | `my/graphs/bridges.cpp` | весна ДЗ 2 | |
-| точки сочленения, cutpoints, articulation | `my/graphs/cutpoints.cpp` | весна ДЗ 2 | |
-| Дейкстра, dijkstra, кратчайший путь | `my/graphs/dijkstra.cpp` | весна ДЗ 4 | |
-| Форд-Беллман, отрицательный цикл, bellman, negative cycle | `my/graphs/bellman.cpp` | весна ДЗ 5 | |
-| СНМ, DSU, Крускал, остов, MST | `my/ds/dsu.cpp` | весна ДЗ 6 | |
-| декартово дерево, treap, неявный ключ, split merge, reverse | `my/ds/treap.cpp` | весна ДЗ 8 | |
-| дерево отрезков, segment tree, ленивое, lazy | `my/ds/segtree.cpp` | весна ДЗ 9 | |
-| Фенвик, fenwick, BIT | `my/ds/fenwick.cpp` | весна ДЗ 10 | |
-| разреженная таблица, sparse table, RMQ | `my/ds/sparse.cpp` | весна ДЗ 10 | |
-| LCA, двоичные подъёмы, binary lifting | `my/graphs/lca.cpp` | весна ДЗ 11 | |
-| НОД, обратный по модулю, решето, КТО, gcd, inverse, sieve, CRT, binpow | `my/math/nt.cpp` | весна ДЗ 12 | |
-| Мо, корневая, sqrt, mo | `my/ds/mo.cpp` | весна ДЗ 15 | |
-| префикс-функция, Z-функция, KMP, prefix function | `my/strings/prefix.cpp` | осень ДЗ 1 | |
-| Ахо-Корасик, aho corasick, бор, trie | `my/strings/aho.cpp` | осень ДЗ 2 | |
-| персистентное ДО, persistent, k-я порядковая на отрезке | `my/ds/persistent.cpp` | осень ДЗ 6 | |
-| паросочетание, Кун, kuhn, matching | `my/graphs/kuhn.cpp` | осень ДЗ 7 | |
-| поток, Диниц, dinic, flow, mincost | `my/graphs/flow.cpp` | осень ДЗ 8 | |
-| геометрия, точка, вектор, векторное произведение | `my/geometry/base.cpp` | осень ДЗ 9 | |
+| Что / ключевые слова | Путь | Индексы, подвохи |
+|---|---|---|
+| топсорт, topological sort | `graph/TopoSort.h` | если есть цикл, вернёт меньше n вершин |
+| мосты, точки сочленения, двусвязность, bridges, articulation | `graph/BiconnectedComponents.h` | мост = компонента из одного ребра; точка сочленения = вершина в >1 компоненте |
+| компоненты сильной связности, SCC, конденсация | `graph/SCC.h` | |
+| 2-SAT | `graph/2sat.h` | отрицание переменной x — это `~x` |
+| Форд-Беллман, отрицательный цикл | `graph/BellmanFord.h` | недостижимые = inf, вершины, задетые отрицательным циклом, = -inf |
+| Флойд, все пары | `graph/FloydWarshall.h` | |
+| Дейкстра | **нет в KACTL** — пишется по памяти (или весенняя ДЗ 4 в `hw/`) | |
+| LCA | `graph/LCA.h` | корень = 0 |
+| двоичные подъёмы, k-й предок | `graph/BinaryLifting.h` | |
+| HLD, запросы на пути в дереве | `graph/HLD.h` | |
+| link-cut tree, LCT | `graph/LinkCutTree.h` | |
+| эйлеров путь/цикл | `graph/EulerWalk.h` | |
+| паросочетание, Кун | `graph/DFSMatching.h` | |
+| паросочетание быстрое, Хопкрофт-Карп | `graph/HopcroftKarp.h` | |
+| венгерский алгоритм, назначение, assignment | `graph/WeightedMatching.h` | минимизирует сумму |
+| поток, Диниц, flow | `graph/Dinic.h` | |
+| поток мин. стоимости, MCMF | `graph/MinCostMaxFlow.h` | отрицательные стоимости → `setpi` перед `maxflow` |
+| мин. разрез, min cut | `graph/MinCut.h`, `graph/GlobalMinCut.h` | |
 
-## KACTL (`ext/kactl/content/...`) — то, чего нет в домашках
+## Структуры данных
 
-Всё в KACTL протестировано. Перед вставкой посмотри `scripts/kactl_prefix.cpp`.
+| Что / ключевые слова | Путь | Индексы, подвохи |
+|---|---|---|
+| СНМ, DSU, Крускал | `data-structures/UnionFind.h` | |
+| дерево отрезков, segment tree | `data-structures/SegmentTree.h` | с 0, запрос `[l, r)`, по умолчанию **максимум**: поменяй `unit` и `f` |
+| ДО с отложенными операциями, lazy, присвоение/прибавление на отрезке | `data-structures/LazySegmentTree.h` | `[l, r)`, максимум + add/set |
+| Фенвик, BIT | `data-structures/FenwickTree.h` | `query(pos)` = сумма `[0, pos)` |
+| Фенвик 2D | `data-structures/FenwickTree2d.h` | |
+| разреженная таблица, RMQ, sparse table | `data-structures/RMQ.h` | `query(a, b)` = min на `[a, b)` |
+| декартово дерево, treap, неявный ключ, split/merge | `data-structures/CartesianTree.h` | |
+| Мо, корневая | `data-structures/Mo.h` | |
+| ordered set, k-й элемент, order of key | `data-structures/OrderStatisticTree.h` | set, не multiset. Нужен GCC |
+| быстрый хеш-мап | `data-structures/HashMap.h` | нужен GCC |
+| CHT, максимум прямых, convex hull trick | `data-structures/LineContainer.h` | ищет **максимум**; для минимума меняй знаки |
+| матрица, возведение в степень | `data-structures/Matrix.h` | |
+| персистентное ДО, k-я порядковая на отрезке | **нет в KACTL** — осенняя ДЗ 6 в `hw/` | |
 
-| Что / ключевые слова | Путь |
-|---|---|
-| компоненты сильной связности, SCC, конденсация | `graph/SCC.h` |
-| 2-SAT | `graph/2sat.h` |
-| компоненты вершинной двусвязности | `graph/BiconnectedComponents.h` |
-| эйлеров путь/цикл, euler | `graph/EulerWalk.h` |
-| HLD, тяжёлые пути, запросы на пути в дереве | `graph/HLD.h` |
-| link-cut tree, LCT, динамическое дерево | `graph/LinkCutTree.h` |
-| Хопкрофт-Карп, быстрое паросочетание | `graph/HopcroftKarp.h` |
-| венгерский алгоритм, назначение, assignment, взвешенное паросочетание | `graph/WeightedMatching.h` |
-| Диниц (если своего нет) | `graph/Dinic.h` |
-| поток мин. стоимости, MCMF, min cost max flow | `graph/MinCostMaxFlow.h` |
-| ordered set, k-й элемент в set, pb_ds | `data-structures/OrderStatisticTree.h` |
-| convex hull trick, CHT, максимум прямых | `data-structures/LineContainer.h` |
-| матрица, возведение матрицы в степень | `data-structures/Matrix.h` |
-| быстрый хеш-мап, gp_hash_table | `data-structures/HashMap.h` |
-| хеши строк, hashing | `strings/Hashing.h` |
-| суффиксный массив, LCP, suffix array | `strings/SuffixArray.h` |
-| палиндромы, Манакер, manacher | `strings/Manacher.h` |
-| проверка на простоту до 7e18, Миллер-Рабин | `number-theory/MillerRabin.h` |
-| факторизация больших чисел, Поллард, pollard rho | `number-theory/Factor.h` |
-| дискретный логарифм, a^x = b mod m | `number-theory/ModLog.h` |
-| NTT, умножение многочленов по модулю 998244353 | `numerical/NumberTheoreticTransform.h` |
-| FFT по произвольному модулю | `numerical/FastFourierTransformMod.h` |
-| Гаусс, система уравнений | `numerical/SolveLinear.h` |
-| Гаусс по модулю 2, xor | `numerical/SolveLinearBinary.h` |
-| определитель по модулю | `numerical/IntDeterminant.h` |
-| Берлекэмп-Мэсси, линейная рекуррента | `numerical/BerlekampMassey.h` |
-| точка, Point (база для всей геометрии KACTL) | `geometry/Point.h` |
-| выпуклая оболочка, convex hull | `geometry/ConvexHull.h` |
-| пересечение отрезков | `geometry/SegmentIntersection.h` |
-| пересечение прямых | `geometry/lineIntersection.h` |
-| площадь многоугольника | `geometry/PolygonArea.h` |
-| точка в многоугольнике | `geometry/InsidePolygon.h` |
-| самые далёкие точки, диаметр, вращающиеся калиперы | `geometry/HullDiameter.h` |
-| ближайшая пара точек | `geometry/ClosestPair.h` |
-| минимальная охватывающая окружность | `geometry/MinimumEnclosingCircle.h` |
-| пересечение окружностей | `geometry/CircleIntersection.h` |
+## Строки
 
-Всё остальное: `ext/kactl/kactl.pdf` — там оглавление на первой странице.
+| Что / ключевые слова | Путь | Индексы, подвохи |
+|---|---|---|
+| префикс-функция, KMP | `strings/KMP.h` | |
+| Z-функция | `strings/Zfunc.h` | `z[0] = 0` |
+| Ахо-Корасик, бор | `strings/AhoCorasick.h` | |
+| хеши строк | `strings/Hashing.h` | |
+| суффиксный массив, LCP | `strings/SuffixArray.h` | |
+| палиндромы, Манакер | `strings/Manacher.h` | |
 
-## Документация
+## Теория чисел и алгебра
 
-| Что | Где |
-|---|---|
-| Статьи по алгоритмам (cp-algorithms, бывш. e-maxx) | `docs/cp-algorithms/src/` — искать поиском по папке |
-| KACTL целиком в PDF | `ext/kactl/kactl.pdf` |
-| C++ (set, map, lower_bound, ...) | Zeal / Dash / офлайн-архив cppreference |
+| Что / ключевые слова | Путь | Индексы, подвохи |
+|---|---|---|
+| арифметика по модулю, Mod | `number-theory/ModularArithmetic.h` | |
+| быстрое возведение в степень, binpow | `number-theory/ModPow.h` | |
+| обратные по модулю для всех чисел до LIM | `number-theory/ModInverse.h` | модуль простой |
+| расширенный Евклид, ax+by=gcd | `number-theory/euclid.h` | |
+| КТО, CRT | `number-theory/ChineseTheory.h` | |
+| решето Эратосфена | `number-theory/Eratosthenes.h` | |
+| проверка на простоту до 7e18, Миллер-Рабин | `number-theory/MillerRabin.h` | |
+| факторизация больших чисел, Поллард | `number-theory/Factor.h` | |
+| дискретный логарифм, a^x = b mod m | `number-theory/ModLog.h` | |
+| функция Эйлера | `number-theory/phiFunction.h` | |
+| NTT, умножение многочленов mod 998244353 | `numerical/NumberTheoreticTransform.h` | |
+| FFT по произвольному модулю | `numerical/FastFourierTransformMod.h` | |
+| Гаусс | `numerical/SolveLinear.h` | |
+| Гаусс по модулю 2, xor | `numerical/SolveLinearBinary.h` | |
+| определитель по модулю | `numerical/IntDeterminant.h` | |
+| линейная рекуррента, Берлекэмп-Мэсси | `numerical/BerlekampMassey.h` | |
+
+## Геометрия (сначала вставь `geometry/Point.h`)
+
+| Что / ключевые слова | Путь | Индексы, подвохи |
+|---|---|---|
+| точка, вектор, cross, dot | `geometry/Point.h` | T = long long или double, не int |
+| площадь многоугольника | `geometry/PolygonArea.h` | возвращает **удвоенную** площадь со знаком |
+| точка в многоугольнике | `geometry/InsidePolygon.h` | |
+| выпуклая оболочка | `geometry/ConvexHull.h` | |
+| пересечение отрезков | `geometry/SegmentIntersection.h` | |
+| пересечение прямых | `geometry/lineIntersection.h` | |
+| диаметр, самые далёкие точки | `geometry/HullDiameter.h` | |
+| ближайшая пара точек | `geometry/ClosestPair.h` | |
+| мин. охватывающая окружность | `geometry/MinimumEnclosingCircle.h` | |
+| пересечение окружностей | `geometry/CircleIntersection.h` | |
