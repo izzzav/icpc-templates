@@ -3,15 +3,15 @@
  * При изменении копируются только вершины на пути от корня до листа (их ~log n),
  * остальные поддеревья общие со старой версией. Поэтому старые версии не портятся,
  * а каждая версия — это просто номер её корня.
- * Версия 0 — пустое дерево (везде unit). update возвращает номер новой версии.
+ * Версия 0 — пустое дерево (везде unit). upd возвращает номер новой версии.
  * Операция как в SegmentTree.h: меняй T, unit и f (ассоциативна, f(unit, x) = f(x, unit) = x).
- * update делает a[pos] = f(a[pos], val): для суммы это +=, для max — max=.
+ * upd делает a[pos] = f(a[pos], val): для суммы это +=, для max — max=.
  * Usage: k-я порядковая на [l, r): сожми значения в [0, m), потом
  *   PST t(m, n); vi root{0};
- *   rep(i,0,n) root.push_back(t.update(root[i], a[i], 1));
+ *   rep(i,0,n) root.push_back(t.upd(root[i], a[i], 1));
  *   t.kth(root[l], root[r], k);                        // сжатое значение
  *   t.query(root[r], 0, x) - t.query(root[l], 0, x);  // сколько < x на [l, r)
- * Time: O(\log N) на операцию, память O(\log N) на update.
+ * Time: O(\log N) на операцию, память O(\log N) на upd.
  * Status: stress-tested
  */
 #pragma once
@@ -30,13 +30,13 @@ struct PST {
 	vector<Node> nodes{{0, 0, unit}};
 	int n;
 
-	// upds — сколько будет update, чтобы выделить память сразу (можно не указывать)
+	// upds — сколько будет upd, чтобы выделить память сразу (можно не указывать)
 	PST(int n, int upds = 0) : n(n) {
 		nodes.reserve((upds + 1) * (bit_width((unsigned)n) + 1));
 	}
 
 	// a[pos] = f(a[pos], val) в версии root, возвращает корень новой версии
-	int update(int root, int pos, T val) { return update(root, pos, val, 0, n); }
+	int upd(int root, int pos, T val) { return upd(root, pos, val, 0, n); }
 
 	// f на [l, r) в версии root
 	T query(int root, int l, int r) { return query(root, l, r, 0, n); }
@@ -64,14 +64,14 @@ struct PST {
 	}
 
 	// Рекурсивные версии: v — вершина, отвечающая за [lo, hi).
-	int update(int v, int pos, T val, int lo, int hi) {
+	int upd(int v, int pos, T val, int lo, int hi) {
 		Node copy = nodes[v]; // именно копия: push_back ниже может переложить вектор
 		if (hi - lo == 1) {
 			copy.val = f(copy.val, val);
 		} else {
 			int mid = (lo + hi) / 2;
-			if (pos < mid) copy.left = update(copy.left, pos, val, lo, mid);
-			else copy.right = update(copy.right, pos, val, mid, hi);
+			if (pos < mid) copy.left = upd(copy.left, pos, val, lo, mid);
+			else copy.right = upd(copy.right, pos, val, mid, hi);
 			copy.val = f(nodes[copy.left].val, nodes[copy.right].val);
 		}
 		nodes.push_back(copy);

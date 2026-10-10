@@ -13,12 +13,15 @@
  */
 #pragma once
 
+// не rand(): на Windows и Codeforces он даёт только 15 бит, приоритеты повторяются
+mt19937 treapRng(2024);
+
 struct Node {
 	Node *l = 0, *r = 0;
-	int val;   // сам элемент
-	int y;     // приоритет: у родителя больше, чем у детей
-	int c = 1; // размер поддерева
-	Node(int val) : val(val), y(rand()) {}
+	int val;    // сам элемент
+	unsigned y; // приоритет: у родителя больше, чем у детей
+	int c = 1;  // размер поддерева
+	Node(int val) : val(val), y(treapRng()) {}
 	void recalc();
 };
 
