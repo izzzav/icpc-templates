@@ -1,0 +1,5 @@
+.DS_Store
+*.exe
+contest-kit/template
+contest-kit/00_solutions/template
+/template

@@ -1,31 +1,21 @@
 # Шаблоны — оглавление
 
-KACTL: `ext/kactl/content/<путь>`. Всё там протестировано, в начале каждого
+KACTL: `kactl/content/<путь>`. Всё там протестировано, в начале каждого
 файла есть Description / Usage / Time — как вызывать, читать там
-Весь KACTL в одном файле с оглавлением: `ext/kactl/kactl.pdf`.
+Весь KACTL в одном файле с оглавлением: `kactl/kactl.pdf`.
 
-Поиск: `Cmd+Shift+F` в IDE по папке или `grep -rli "segment" ext/kactl/content`.
+Поиск: `Ctrl+Shift+F` (на маке `Cmd+Shift+F`) в IDE по папке `kactl/content`.
 
 ## Перед вставкой KACTL-кода
 
 1. Удали из файла `#pragma once` и строки `#include "..."`. То, что они подключали,
    вставь выше (например, для геометрии сначала `geometry/Point.h`).
-2. Если в основном шаблоне нет `rep`, `all`, `sz`, `ll`, `pii`, `vi`, добавь строки
-   из `scripts/kactl_prefix.cpp`.
+2. Если в основном шаблоне нет `rep`, `all`, `sz`, `ll`, `pii`, `vi`, возьми эти строки
+   из `00_solutions/template.cpp`.
 3. Посмотри колонку «Индексы»: в KACTL почти везде полуинтервалы `[l, r)` и нумерация с 0.
 
-## Скрипты (`scripts/`) — работают на macOS и Linux
-
-| Что | Команда |
-|---|---|
-| Проверить, что скрипты работают | `bash scripts/selftest.sh` |
-| Запуск с санитайзерами | `./scripts/run.sh a.cpp in.txt` |
-| Стресс-тест | `./scripts/stress.sh sol.cpp brute.cpp gen.cpp 1000` (с санитайзерами: `SAN=1 ...`) |
-| Образец генератора | `scripts/gen.cpp` |
-| Компилируются ли все .cpp в папке | `./scripts/check_all.sh hw` |
-
 macOS: `brew install gcc`, иначе не соберётся код с pb_ds (`OrderStatisticTree.h`,
-`HashMap.h`) и `__gcd`. Скрипты сами найдут g++ из brew.
+`HashMap.h`) и `__gcd`. На Windows MinGW — это и есть GCC, всё соберётся.
 
 ## Графы
 
@@ -37,7 +27,7 @@ macOS: `brew install gcc`, иначе не соберётся код с pb_ds (`
 | 2-SAT | `graph/2sat.h` | отрицание переменной x — это `~x` |
 | Форд-Беллман, отрицательный цикл | `graph/BellmanFord.h` | недостижимые = inf, вершины, задетые отрицательным циклом, = -inf |
 | Флойд, все пары | `graph/FloydWarshall.h` | |
-| Дейкстра | **нет в KACTL** — пишется по памяти (или весенняя ДЗ 4 в `hw/`) | |
+| Дейкстра | **нет в KACTL** — пишется по памяти (BFS + `priority_queue`) | |
 | LCA | `graph/LCA.h` | корень = 0 |
 | двоичные подъёмы, k-й предок | `graph/BinaryLifting.h` | |
 | HLD, запросы на пути в дереве | `graph/HLD.h` | |
@@ -66,7 +56,7 @@ macOS: `brew install gcc`, иначе не соберётся код с pb_ds (`
 | быстрый хеш-мап | `data-structures/HashMap.h` | нужен GCC |
 | CHT, максимум прямых, convex hull trick | `data-structures/LineContainer.h` | ищет **максимум**; для минимума меняй знаки |
 | матрица, возведение в степень | `data-structures/Matrix.h` | |
-| персистентное ДО, k-я порядковая на отрезке | **нет в KACTL** — осенняя ДЗ 6 в `hw/` | |
+| персистентное ДО, k-я порядковая на отрезке | `data-structures/PersistentST.h` (наш, не из KACTL) | |
 
 ## Строки
 
